@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundWave — Музыкальный плеер</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SoundWave">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Кастомные стили -->
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Фоновые частицы -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+    <div class="app-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    
+                    <!-- ХЕДЕР -->
+                    <header class="text-center mb-4">
+                        <h1 class="fw-bold logo-text">
+                            <i class="bi bi-soundwave me-2"></i>Sound<span class="text-accent">Wave</span>
+                        </h1>
+                        <p class="text-muted small">Перетащи MP3-файл или нажми для загрузки</p>
+                    </header>
+                    
+                    <!-- ЗОНА ЗАГРУЗКИ -->
+                    <div class="drop-zone glass-card rounded-4 p-5 text-center mb-4" id="dropZone">
+                        <i class="bi bi-cloud-upload fs-1 d-block mb-3"></i>
+                        <h5 class="fw-bold mb-2">Перетащи аудиофайл сюда</h5>
+                        <p class="text-muted small mb-3">Поддерживаются MP3, WAV, OGG, FLAC</p>
+                        <button class="btn btn-accent rounded-pill px-4" id="browseBtn">
+                            <i class="bi bi-folder2-open me-2"></i>Выбрать файл
+                        </button>
+                        <input type="file" id="fileInput" accept="audio/*" hidden multiple>
+                        
+                        <!-- Импорт/Экспорт -->
+                        <div class="mt-3 d-flex flex-wrap justify-content-center gap-2">
+                            <button class="btn btn-glass btn-sm rounded-pill px-3" id="importBtn" title="Импорт плейлиста">
+                                <i class="bi bi-box-arrow-in-down me-1"></i>Импорт
+                            </button>
+                            <button class="btn btn-glass btn-sm rounded-pill px-3" id="exportBtn" title="Экспорт плейлиста">
+                                <i class="bi bi-box-arrow-up me-1"></i>Экспорт
+                            </button>
+                            <input type="file" id="importFile" accept=".json" hidden>
+                        </div>
+                    </div>
+                    
+                    <!-- ВИЗУАЛИЗАТОР -->
+                    <div class="visualizer-container glass-card rounded-4 overflow-hidden mb-3">
+                        <canvas id="visualizer" class="w-100"></canvas>
+                        <div class="visualizer-placeholder d-flex align-items-center justify-content-center" id="visualizerPlaceholder">
+                            <div class="text-center text-muted">
+                                <div class="equalizer-bars mb-3" id="idleBars">
+                                    <span></span><span></span><span></span><span></span><span></span>
+                                    <span></span><span></span><span></span><span></span><span></span>
+                                    <span></span><span></span><span></span><span></span><span></span>
+                                    <span></span><span></span><span></span><span></span><span></span>
+                                </div>
+                                <small>Загрузи музыку, чтобы увидеть визуализацию</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ПЕРЕКЛЮЧАТЕЛИ ВИЗУАЛИЗАЦИИ -->
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-glass active" id="modeBars" onclick="setVisualizerMode('bars')" title="Бары">
+                                <i class="bi bi-bar-chart-fill"></i>
+                            </button>
+                            <button class="btn btn-glass" id="modeWave" onclick="setVisualizerMode('wave')" title="Волна">
+                                <i class="bi bi-graph-up"></i>
+                            </button>
+                            <button class="btn btn-glass" id="modeCircle" onclick="setVisualizerMode('circle')" title="Круг">
+                                <i class="bi bi-circle"></i>
+                            </button>
+                            <button class="btn btn-glass" id="modeMic" onclick="toggleMicMode()" title="Микрофон">
+                                <i class="bi bi-mic"></i>
+                            </button>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-glass" id="themeNeon" onclick="setColorTheme('neon')" title="Неон">💜</button>
+                            <button class="btn btn-glass" id="themeFire" onclick="setColorTheme('fire')" title="Огонь">🔥</button>
+                            <button class="btn btn-glass" id="themeOcean" onclick="setColorTheme('ocean')" title="Океан">🌊</button>
+                            <button class="btn btn-glass" id="themeRainbow" onclick="setColorTheme('rainbow')" title="Радуга">🌈</button>
+                        </div>
+                    </div>
+                    
+                    <!-- ИНФОРМАЦИЯ О ТРЕКЕ -->
+                    <div class="glass-card rounded-4 p-4 mb-3 text-center" id="trackInfo">
+                        <h4 class="fw-bold mb-1" id="trackTitle">Нет трека</h4>
+                        <p class="text-muted mb-0" id="trackArtist">Загрузи музыку для начала</p>
+                    </div>
+                    
+                    <!-- ПРОГРЕСС-БАР -->
+                    <div class="glass-card rounded-4 p-3 mb-3">
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">0:00</span>
+                        </div>
+                        <input type="range" class="form-range custom-range" id="seekBar" min="0" max="100" value="0">
+                    </div>
+                    
+                    <!-- УПРАВЛЕНИЕ -->
+                    <div class="glass-card rounded-4 p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-center align-items-center gap-3 mb-3 mb-md-0">
+                                    <button class="btn btn-glass btn-lg rounded-circle" id="shuffleBtn" title="Перемешать">
+                                        <i class="bi bi-shuffle"></i>
+                                    </button>
+                                    <button class="btn btn-glass btn-lg rounded-circle" id="prevBtn" title="Предыдущий">
+                                        <i class="bi bi-skip-start-fill"></i>
+                                    </button>
+                                    <button class="btn btn-accent btn-lg rounded-circle play-btn" id="playBtn" title="Воспроизвести">
+                                        <i class="bi bi-play-fill fs-3"></i>
+                                    </button>
+                                    <button class="btn btn-glass btn-lg rounded-circle" id="nextBtn" title="Следующий">
+                                        <i class="bi bi-skip-end-fill"></i>
+                                    </button>
+                                    <button class="btn btn-glass btn-lg rounded-circle" id="repeatBtn" title="Повтор">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center gap-2 justify-content-md-end justify-content-center">
+                                    <i class="bi bi-volume-down text-muted"></i>
+                                    <input type="range" class="form-range custom-range" id="volumeBar" min="0" max="100" value="70" style="max-width: 120px;">
+                                    <i class="bi bi-volume-up text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ПЛЕЙЛИСТ -->
+                    <div class="glass-card rounded-4 p-4 mt-3">
+                        <h5 class="fw-bold mb-3">
+                            <i class="bi bi-music-note-list me-2"></i>Плейлист
+                            <span class="text-muted small" id="playlistCount">0 треков</span>
+                        </h5>
+                        <div id="playlistContainer">
+                            <p class="text-muted text-center py-3">Плейлист пуст. Загрузи треки!</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Тост-контейнер -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Скрипты -->
+    <script src="js/audio-engine.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/playlist.js"></script>
+    <script src="js/dragdrop.js"></script>
+    
+    <!-- PWA + Media Session -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/soundwave/sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW failed:', err));
+            });
+        }
+        
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => resumeAudio());
+            navigator.mediaSession.setActionHandler('pause', () => pauseAudio());
+            navigator.mediaSession.setActionHandler('previoustrack', () => playPrevious());
+            navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
+        }
+    </script>
+</body>
+</html>

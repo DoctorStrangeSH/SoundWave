@@ -1,0 +1,22 @@
+{
+  "name": "SoundWave — Музыкальный плеер",
+  "short_name": "SoundWave",
+  "description": "Музыкальный плеер с визуализацией и микрофоном",
+  "start_url": "/soundwave/",
+  "scope": "/soundwave/",
+  "display": "standalone",
+  "background_color": "#0a0a14",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
