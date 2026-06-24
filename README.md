@@ -5,7 +5,7 @@
   
   **Погодное SPA-приложение с glassmorphism-дизайном**
   
-  [![GitHub Pages](https://img.shields.io/badge/Демо-GitHub%20Pages-FF8C42?style=for-the-badge&logo=github)](https://твой-логин.github.io/weathernow/)
+  [![GitHub Pages](https://img.shields.io/badge/Демо-GitHub%20Pages-FF8C42?style=for-the-badge&logo=github)](https://doctorstrangesh.github.io/SoundWave/)
   [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/ru/docs/Web/JavaScript)
   [![Chart.js](https://img.shields.io/badge/Chart.js-4.4-FF6384?style=for-the-badge&logo=chart.js)](https://www.chartjs.org)
   [![OpenWeatherMap](https://img.shields.io/badge/OpenWeather-API-FF8C42?style=for-the-badge)](https://openweathermap.org/api)
@@ -13,14 +13,6 @@
 
 ---
 
-## 📸 Скриншоты
-
-<div align="center">
-  <img src="https://placehold.co/600x340/87CEEB/white?text=Светлая+тема" alt="Светлая тема" width="45%">
-  <img src="https://placehold.co/600x340/0a0a2e/white?text=Тёмная+тема" alt="Тёмная тема" width="45%">
-</div>
-
----
 
 ## 📋 О проекте
 
@@ -96,4 +88,21 @@
 
 ---
 
-## 📁 Архитектура проекта
+### 🧩 Принципы проектирования
+- **Разделение ответственности** — аудио-движок, визуализатор, плеер, плейлист — независимые модули
+- **Реактивная визуализация** — Canvas обновляется 60 раз в секунду через requestAnimationFrame
+- **Progressive Web App** — работает офлайн, устанавливается на телефон
+- **Graceful degradation** — при отсутствии IndexedDB треки хранятся в памяти
+
+---
+
+## 🔧 Быстрый старт
+
+```bash
+# 1. Клонируй репозиторий
+git clone https://doctorstrangesh.github.io/SoundWave/
+cd soundwave
+
+# 2. Запусти через Live Server
+
+# 3. Перетащи MP3-файл в зону загрузки
