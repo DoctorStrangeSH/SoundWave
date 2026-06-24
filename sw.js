@@ -1,15 +1,15 @@
-const CACHE_NAME = 'soundwave-v1';
+const CACHE_NAME = 'SoundWave-v1';
 const ASSETS = [
-  '/soundwave/',
-  '/soundwave/index.html',
-  '/soundwave/style.css',
-  '/soundwave/manifest.json',
-  '/soundwave/js/audio-engine.js',
-  '/soundwave/js/visualizer.js',
-  '/soundwave/js/player.js',
-  '/soundwave/js/playlist.js',
-  '/soundwave/js/dragdrop.js',
-  '/soundwave/assets/favicon.svg'
+  '/SoundWave/',
+  '/SoundWave/index.html',
+  '/SoundWave/style.css',
+  '/SoundWave/manifest.json',
+  '/SoundWave/js/audio-engine.js',
+  '/SoundWave/js/visualizer.js',
+  '/SoundWave/js/player.js',
+  '/SoundWave/js/playlist.js',
+  '/SoundWave/js/dragdrop.js',
+  '/SoundWave/assets/favicon.svg'
 ];
 
 self.addEventListener('install', event => {

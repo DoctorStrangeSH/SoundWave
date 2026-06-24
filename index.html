@@ -185,7 +185,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/soundwave/sw.js')
+                navigator.serviceWorker.register('/SoundWave/sw.js')
                     .then(reg => console.log('SW registered'))
                     .catch(err => console.log('SW failed:', err));
             });

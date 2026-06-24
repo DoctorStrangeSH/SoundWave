@@ -33,12 +33,13 @@ async function saveTrackToDB(trackData) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['tracks'], 'readwrite');
     const store = transaction.objectStore('tracks');
+    
+    // Не сохраняем buffer — он слишком большой для IndexedDB
     const request = store.add({
       name: trackData.name,
       artist: trackData.artist || '',
       duration: trackData.duration,
       size: trackData.size,
-      buffer: trackData.buffer,
       addedAt: new Date().toISOString()
     });
     
@@ -91,14 +92,16 @@ async function addTrack(trackData) {
   
   updatePlaylistUI();
   
-  if (playlist.length === 1) {
+  if (playlist.length === 1 && trackData.buffer) {
     loadTrack(0);
   }
   
+  // Сохраняем в IndexedDB (без буфера)
   try {
-    await saveTrackToDB(trackData);
+    const dbId = await saveTrackToDB(trackData);
+    playlist[playlist.length - 1].dbId = dbId;
   } catch (e) {
-    console.log('Не удалось сохранить в IndexedDB');
+    console.log('Не удалось сохранить в IndexedDB:', e.message);
   }
 }
 
@@ -240,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Загружаем треки из IndexedDB при старте
+// Загружаем метаданные из IndexedDB при старте
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     await openDatabase();
@@ -253,12 +256,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         name: t.name,
         artist: t.artist,
         duration: t.duration,
-        buffer: t.buffer,
+        buffer: null, // Буфер не сохраняется в IndexedDB
         size: t.size
       }));
       
       updatePlaylistUI();
-      loadTrack(0);
+      
+      // Показываем сообщение, что треки загружены, но нужны файлы
+      if (playlist.length > 0 && !playlist[0].buffer) {
+        showToast(`Загружен плейлист (${playlist.length} треков). Перетащи аудиофайлы для воспроизведения.`, 'info');
+      }
     }
   } catch (e) {
     console.log('IndexedDB не поддерживается или пуста');
